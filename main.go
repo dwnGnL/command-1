@@ -23,6 +23,7 @@ func main() {
 	var logined bool
 	db := map[string]*[]Student{}
 	var exit bool
+	emptySlice := []Student{Student{}}
 
 	readedPassHash := readPasswordHash()
 
@@ -143,14 +144,6 @@ func main() {
 			break
 		case Create:
 			tableName := commandStruct[2]
-			emptySlice := []Student{
-				Student{
-					ID:         1,
-					Age:        54,
-					Fname:      "Bill Gates",
-					Experience: 30,
-				},
-			}
 			db[tableName] = &emptySlice
 			fmt.Println("table created: " + tableName)
 			break
@@ -159,14 +152,6 @@ func main() {
 			args := commandStruct[1]
 			arg := strings.Split(args, ",")
 			tableName := commandStruct[3]
-			emptySlice := []Student{
-				Student{
-					ID:         1,
-					Age:        54,
-					Fname:      "Bill Gates",
-					Experience: 30,
-				},
-			}
 			age, _ := strconv.Atoi(arg[1])
 			isStudent, _ := strconv.ParseBool(arg[2])
 			exp, _ := strconv.Atoi(arg[3])
@@ -174,7 +159,7 @@ func main() {
 				if db[tableName] == nil {
 					fmt.Println("table not exits")
 				} else {
-					ID++
+
 					emptySlice = append(emptySlice, Student{
 						ID:         ID,
 						Age:        age,
@@ -182,13 +167,16 @@ func main() {
 						IsStudent:  isStudent,
 						Experience: exp,
 					})
-					db[tableName] = &emptySlice
+
 				}
+				db[tableName] = &emptySlice
+				ID++
 			} else {
 				fmt.Println(strings.Repeat("-", 50))
 				fmt.Println("| check value of coll or count of coll |")
 				fmt.Println(strings.Repeat("-", 50))
 			}
+			break
 
 		case Delete:
 			tableName := commandStruct[1]
@@ -197,17 +185,18 @@ func main() {
 				b, _ := strconv.Atoi(commandStruct[5])
 				for _, row := range arrayOfStudents {
 					if row.ID == b {
-						fmt.Println("dsd")
-						// arrayOfStudents=append(arrayOfStudents[:(b-1)],arrayOfStudents[(b+1):])
-						// fmt.Printf("Вы удалили %T",qwer)
+
+						arrayOfStudents = append(arrayOfStudents[:row.ID], arrayOfStudents[row.ID+1:]...)
+
 					}
 				}
+				db[tableName] = &arrayOfStudents
 			} else {
 				fmt.Println(strings.Repeat("-", 50))
 				fmt.Println("| check where argument |")
 				fmt.Println(strings.Repeat("-", 50))
 			}
-
+			break
 		case Update:
 			tableName := commandStruct[4]
 			arg := commandStruct[1]
@@ -231,7 +220,8 @@ func main() {
 					}
 				}
 			}
-
+			db[tableName] = &arrayOfStudents
+			break
 		default:
 			fmt.Println(strings.Repeat("-", 25))
 			fmt.Println("| command not recognize |")
