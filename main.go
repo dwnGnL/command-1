@@ -19,11 +19,11 @@ const (
 func main() {
 	var login string
 	var password string
-	var ID int = 1
+	var ID int
 	var logined bool
 	db := map[string]*[]Student{}
 	var exit bool
-	emptySlice := []Student{Student{}}
+	var emptySlice = []Student{Student{}}
 
 	readedPassHash := readPasswordHash()
 
@@ -145,6 +145,7 @@ func main() {
 		case Create:
 			tableName := commandStruct[2]
 			db[tableName] = &emptySlice
+			emptySlice = nil
 			fmt.Println("table created: " + tableName)
 			break
 
@@ -169,28 +170,31 @@ func main() {
 					})
 
 				}
-				db[tableName] = &emptySlice
-				ID++
+
 			} else {
 				fmt.Println(strings.Repeat("-", 50))
 				fmt.Println("| check value of coll or count of coll |")
 				fmt.Println(strings.Repeat("-", 50))
 			}
+			db[tableName] = &emptySlice
+			ID++
 			break
 
 		case Delete:
 			tableName := commandStruct[1]
+			emptySlice = *db[tableName]
 			if commandStruct[2] == "where" {
-				arrayOfStudents := *db[tableName]
+
 				b, _ := strconv.Atoi(commandStruct[5])
-				for _, row := range arrayOfStudents {
+				for i, row := range emptySlice {
 					if row.ID == b {
-
-						arrayOfStudents = append(arrayOfStudents[:row.ID], arrayOfStudents[row.ID+1:]...)
-
+						emptySlice = append(emptySlice[:i], emptySlice[i+1:]...)
 					}
 				}
-				db[tableName] = &arrayOfStudents
+				db[tableName] = &emptySlice
+
+				ID--
+
 			} else {
 				fmt.Println(strings.Repeat("-", 50))
 				fmt.Println("| check where argument |")
@@ -200,27 +204,33 @@ func main() {
 		case Update:
 			tableName := commandStruct[4]
 			arg := commandStruct[1]
-			arrayOfStudents := *db[tableName]
+			emptySlice = *db[tableName]
+
 			b, _ := strconv.Atoi(commandStruct[8])
 
 			if arg == "*" {
 				args := commandStruct[2]
+				var row Student
+
 				cols := strings.Split(args, ",")
 				age, _ := strconv.Atoi(cols[1])
 				isStudent, _ := strconv.ParseBool(cols[2])
 				exp, _ := strconv.Atoi(cols[3])
-
-				for _, row := range arrayOfStudents {
+				for _, row = range emptySlice {
 					if row.ID == b {
-						row.Fname = cols[0]
-						fmt.Print(row.Fname)
-						row.Age = age
-						row.IsStudent = isStudent
-						row.Experience = exp
+						emptySlice = append(emptySlice, Student{
+							Age:        age,
+							Fname:      cols[0],
+							IsStudent:  isStudent,
+							Experience: exp,
+						})
+
 					}
+
 				}
+
 			}
-			db[tableName] = &arrayOfStudents
+			db[tableName] = &emptySlice
 			break
 		default:
 			fmt.Println(strings.Repeat("-", 25))
