@@ -22,8 +22,8 @@ func main() {
 	var ID int
 	var logined bool
 	db := map[string]*[]Student{}
-	var exit bool
 	var emptySlice = []Student{Student{}}
+	var exit bool
 
 	readedPassHash := readPasswordHash()
 
@@ -160,7 +160,7 @@ func main() {
 				if db[tableName] == nil {
 					fmt.Println("table not exits")
 				} else {
-
+					ID++
 					emptySlice = append(emptySlice, Student{
 						ID:         ID,
 						Age:        age,
@@ -177,7 +177,7 @@ func main() {
 				fmt.Println(strings.Repeat("-", 50))
 			}
 			db[tableName] = &emptySlice
-			ID++
+
 			break
 
 		case Delete:
@@ -186,14 +186,12 @@ func main() {
 			if commandStruct[2] == "where" {
 
 				b, _ := strconv.Atoi(commandStruct[5])
-				for i, row := range emptySlice {
+				for _, row := range emptySlice {
 					if row.ID == b {
-						emptySlice = append(emptySlice[:i], emptySlice[i+1:]...)
+						emptySlice = append(emptySlice[:row.ID-1], emptySlice[row.ID:]...)
 					}
 				}
 				db[tableName] = &emptySlice
-
-				ID--
 
 			} else {
 				fmt.Println(strings.Repeat("-", 50))
@@ -210,27 +208,24 @@ func main() {
 
 			if arg == "*" {
 				args := commandStruct[2]
-				var row Student
-
 				cols := strings.Split(args, ",")
 				age, _ := strconv.Atoi(cols[1])
 				isStudent, _ := strconv.ParseBool(cols[2])
 				exp, _ := strconv.Atoi(cols[3])
-				for _, row = range emptySlice {
+				for _, row := range emptySlice {
 					if row.ID == b {
-						emptySlice = append(emptySlice, Student{
-							Age:        age,
-							Fname:      cols[0],
-							IsStudent:  isStudent,
-							Experience: exp,
-						})
 
+						row.Age = age
+						row.Fname = cols[0]
+						row.IsStudent = isStudent
+						row.Experience = exp
+						emptySlice[row.ID-1] = row
 					}
 
 				}
 
 			}
-			db[tableName] = &emptySlice
+
 			break
 		default:
 			fmt.Println(strings.Repeat("-", 25))
