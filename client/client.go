@@ -11,23 +11,34 @@ import(
 
 func main()  {
 	conn,err:=net.Dial("tcp",":8111")
-
+	var logined bool
 	if err!=nil{
 		log.Println("нет соединения ",err.Error())
 		return
 	}
 
-	fmt.Println("what your name: ")
+	
+	for !logined {
+	fmt.Println("Enter username: ")
 	name,err:= bufio.NewReader(os.Stdin).ReadString('\n')
+		fmt.Println("Enter pass:")
+	pass,err:= bufio.NewReader(os.Stdin).ReadString('\n')
+	
 	
 	if err!=nil{
 		log.Println("не можем отправить имя на сервер",err.Error())
 		return
 	}
 	conn.Write([]byte(name))
-
-	go WriteMsg(conn)
-	ReadMsg(conn)
+	conn.Write([]byte(pass))
+	text,_:= bufio.NewReader(conn).ReadString(';')
+	if text == "true;"{
+		logined=true
+	}
+	}
+	
+	go ReadMsg(conn)
+	WriteMsg(conn)
 
 }
 

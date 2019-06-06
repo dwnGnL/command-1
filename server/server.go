@@ -27,12 +27,36 @@ func main()  {
 	}
 }
 
+
+
 func handleConn(conn net.Conn){
 	var exit bool
+	var logined bool
+	readedPassHash := readPasswordHash()
 	connections = append(connections,conn)
-	userName,_:=bufio.NewReader(conn).ReadString('\n')
-	userName = userName[:len(userName)-2]
-	_,err := conn.Write([]byte("Welcome to chat Mr(s) "+ userName + "\n"))
+	var userName string
+	
+	for !logined {
+		userName,_=bufio.NewReader(conn).ReadString('\n')
+		userName = userName[:len(userName)-2]
+		pass,_:=bufio.NewReader(conn).ReadString('\n')
+		pass= pass[:len(pass)-2]
+	if userName == "root" && checkHash(pass, readedPassHash) {
+		logined = true
+		fmt.Println("Hello, root")
+		_,err:=conn.Write([]byte("true;"))
+		if err != nil{
+			fmt.Println(err)
+		}
+	} else {
+		_,err:=conn.Write([]byte("false;"))
+		if err != nil{
+			fmt.Println(err)
+		}
+		fmt.Println("Invalid credentials")
+	}
+}
+	_,err := conn.Write([]byte("Welcome to chat Mr(s) "+ userName + "\n;"))
 
 	if err != nil{
 		fmt.Println(err)
