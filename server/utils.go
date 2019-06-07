@@ -152,7 +152,8 @@ func allMake(command string)string{
 			break
 		case Create:
 			tableName := commandStruct[2]
-			db[tableName] = &emptySlice
+			emptySlice2:=[]Student{}
+			db[tableName] = &emptySlice2
 			var text string
 			text+=fmt.Sprintln("table created: " + tableName +";")
 			return text

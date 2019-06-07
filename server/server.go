@@ -64,12 +64,23 @@ func handleConn(conn net.Conn){
 
 	for !exit {
 		reader := bufio.NewReader(conn)
-		command, _ := reader.ReadString(';')
+		command, err := reader.ReadString(';')
+		if err !=nil{
+			fmt.Println(err.Error())
+			conn.Close()
+			removeConn(conn)
+			fmt.Print(userName+" is Offline")
+			break
+		}
 		text:=allMake(command[:len(command)-1])
-		_,err := conn.Write([]byte(text))
+		_,err2 := conn.Write([]byte(text))
 
-			if err !=nil{
+			if err2 !=nil{
 				fmt.Println(err.Error())
+				conn.Close()
+				removeConn(conn)
+				fmt.Print(userName+" is Offline")
+				break
 			}
 
 		
@@ -90,24 +101,25 @@ func handleConn(conn net.Conn){
 	// }
 }
 
-// func removeConn(conn net.Conn){
-// 	var i int
+func removeConn(conn net.Conn){
+	var i int
 
-// 	for i = range connections{
-// 		if connections[i] == conn {
-// 			break
-// 		}
-// 	}
+	for i = range connections{
+		if connections[i] == conn {
+			break
+		}
+	}
 
-// 	fmt.Println(i)
 
-// 	if len(connections) > 1{
-// 		connections = append(connections[:i],connections[i+1:]...)
-// 	}else{
-// 		connections = nil
-// 	}
+	fmt.Println(i)
 
-// }
+	if len(connections) > 1{
+		connections = append(connections[:i],connections[i+1:]...)
+	}else{
+		connections = nil
+	}
+
+}
 
 // func broadCastMsg(msg string,sourceConn net.Conn){
 // 	for _,conn:=range connections{
