@@ -39,7 +39,7 @@ func readPasswordHash() string {
 
 }
 
-var ID int
+var ID= make(map[string]int)
 var db = map[string]*[]Student{}
 	var emptySlice = []Student{}
 
@@ -154,6 +154,7 @@ func allMake(command string)string{
 			tableName := commandStruct[2]
 			emptySlice2:=[]Student{}
 			db[tableName] = &emptySlice2
+			ID[tableName]=0
 			var text string
 			text+=fmt.Sprintln("table created: " + tableName +";")
 			return text
@@ -173,9 +174,10 @@ func allMake(command string)string{
 					text+=fmt.Sprintln("table not exits;")
 					return text
 				} else {
-					ID++
-					emptySlice = append(emptySlice, Student{
-						ID:         ID,
+					fmt.Println("dsdsds")
+					ID[tableName]+=1
+					*db[tableName] = append(*db[tableName], Student{
+						ID:         ID[tableName],
 						Age:        age,
 						Fname:      arg[0],
 						IsStudent:  isStudent,
