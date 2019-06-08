@@ -35,11 +35,26 @@ func handleConn(conn net.Conn){
 	readedPassHash := readPasswordHash()
 	connections = append(connections,conn)
 	var userName string
+	var errname error
 	
 	for !logined {
-		userName,_=bufio.NewReader(conn).ReadString('\n')
+		userName,errname=bufio.NewReader(conn).ReadString('\n')
+		if errname !=nil{
+			fmt.Println(errname.Error())
+			conn.Close()
+			removeConn(conn)
+			fmt.Print(userName+" is Offline")
+			break
+		}
 		userName = userName[:len(userName)-2]
-		pass,_:=bufio.NewReader(conn).ReadString('\n')
+		pass,errpass:=bufio.NewReader(conn).ReadString('\n')
+		if errpass !=nil{
+			fmt.Println(errpass.Error())
+			conn.Close()
+			removeConn(conn)
+			fmt.Print(userName+" is Offline")
+			break
+		}
 		pass= pass[:len(pass)-2]
 	if userName == "root" && checkHash(pass, readedPassHash) {
 		logined = true

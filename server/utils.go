@@ -210,6 +210,8 @@ func allMake(command string)string{
 					}
 				}
 				db[tableName] = &emptySlice
+				 text="delete one row"
+				 return text
 
 			} else {
 				text+=fmt.Sprintln(strings.Repeat("-", 50))
